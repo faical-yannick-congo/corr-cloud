@@ -33,7 +33,7 @@ import mimetypes
 @app.route(CLOUD_URL + '/<hash_session>/record/remove/<record_id>', methods=['DELETE'])
 @crossdomain(origin='*')
 def record_remove(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/remove/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/remove/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -47,23 +47,23 @@ def record_remove(hash_session, record_id):
             except:
                 print str(traceback.print_exc())
             if record is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if record.project.owner == current_user:
                     delete_record_files(record)
                     record.delete()
                     return fk.Response('Record removed', status.HTTP_200_OK)
                 else:
-                    return fk.redirect('http://localhost:5000/error-401/?action=remove_failed')
+                    return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_failed')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=remove_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_denied')
     else:
-       return fk.redirect('http://localhost:5000/error-405/') 
+       return fk.redirect('http://0.0.0.0:5000/error-405/') 
 
 @app.route(CLOUD_URL + '/<hash_session>/record/comment/<record_id>', methods=['POST'])
 @crossdomain(origin='*')
 def record_comment(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/comment/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/comment/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -77,7 +77,7 @@ def record_comment(hash_session, record_id):
             except:
                 print str(traceback.print_exc())
             if record is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if record.project.owner == current_user:
                     if fk.request.data:
@@ -88,20 +88,20 @@ def record_comment(hash_session, record_id):
                             record.save()
                             return fk.Response('Projject comment posted', status.HTTP_200_OK)
                         else:
-                            return fk.redirect('http://localhost:5000/error-400/')
+                            return fk.redirect('http://0.0.0.0:5000/error-400/')
                     else:
-                        return fk.redirect('http://localhost:5000/error-415/')
+                        return fk.redirect('http://0.0.0.0:5000/error-415/')
                 else:
-                    return fk.redirect('http://localhost:5000/error-401/?action=remove_failed')
+                    return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_failed')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=remove_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_denied')
     else:
-       return fk.redirect('http://localhost:5000/error-405/') 
+       return fk.redirect('http://0.0.0.0:5000/error-405/') 
 
 @app.route(CLOUD_URL + '/<hash_session>/record/comments/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def record_comments(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/comments/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/comments/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -115,18 +115,18 @@ def record_comments(hash_session, record_id):
             except:
                 print str(traceback.print_exc())
             if record is None or (record != None and record.access != 'public'):
-                return fk.redirect('http://localhost:5000/?action=comments_failed')
+                return fk.redirect('http://0.0.0.0:5000/?action=comments_failed')
             else:
                 return fk.Response(json.dumps(record.comments, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=comments_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=comments_denied')
     else:
-        return fk.redirect('http://localhost:5000/error-405/') 
+        return fk.redirect('http://0.0.0.0:5000/error-405/') 
 
 @app.route(CLOUD_URL + '/<hash_session>/record/view/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def record_view(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/view/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/view/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -140,21 +140,21 @@ def record_view(hash_session, record_id):
             except:
                 print str(traceback.print_exc())
             if record is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if record.project.owner == current_user:
                     return fk.Response(record.to_json(), mimetype='application/json')
                 else:
-                    return fk.redirect('http://localhost:5000/error-401/?action=view_failed')
+                    return fk.redirect('http://0.0.0.0:5000/error-401/?action=view_failed')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=view_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=view_denied')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')      
+        return fk.redirect('http://0.0.0.0:5000/error-405/')      
 
 @app.route(CLOUD_URL + '/<hash_session>/record/edit/<record_id>', methods=['POST'])
 @crossdomain(origin='*')
 def record_edit(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/edit/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/edit/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -163,7 +163,7 @@ def record_edit(hash_session, record_id):
         current_user = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if current_user is None:
-            return fk.redirect('http://localhost:5000/error-401/?action=edit_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=edit_denied')
         else:
             allowance = current_user.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
             print "Allowance: "+allowance
@@ -173,7 +173,7 @@ def record_edit(hash_session, record_id):
                 except:
                     print str(traceback.print_exc())
                 if record is None:
-                    return fk.redirect('http://localhost:5000/error-204/')
+                    return fk.redirect('http://0.0.0.0:5000/error-204/')
                 else:
                     if record.project.owner == current_user:
                         if fk.request.data:
@@ -186,20 +186,20 @@ def record_edit(hash_session, record_id):
                                     return fk.Response('Record edited', status.HTTP_200_OK)
                                 except:
                                     print str(traceback.print_exc())
-                                    return fk.redirect('http://localhost:5000/error-400/')
+                                    return fk.redirect('http://0.0.0.0:5000/error-400/')
                         else:
-                            return fk.redirect('http://localhost:5000/error-415/')
+                            return fk.redirect('http://0.0.0.0:5000/error-415/')
                     else:
-                        return fk.redirect('http://localhost:5000/error-401/?action=edit_failed')
+                        return fk.redirect('http://0.0.0.0:5000/error-401/?action=edit_failed')
             else:
-                return fk.redirect('http://localhost:5000/error-404/')
+                return fk.redirect('http://0.0.0.0:5000/error-404/')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/<hash_session>/record/pull/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def pull_record(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/pull/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/pull/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -208,7 +208,7 @@ def pull_record(hash_session, record_id):
         current_user = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if current_user is None:
-            return fk.redirect('http://localhost:5000/error-401/?action=pull_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=pull_denied')
         else:
             allowance = current_user.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
             print "Allowance: "+allowance
@@ -218,7 +218,7 @@ def pull_record(hash_session, record_id):
                 except:
                     print str(traceback.print_exc())
                 if record is None:
-                    return fk.redirect('http://localhost:5000/error-204/')
+                    return fk.redirect('http://0.0.0.0:5000/error-204/')
                 else:
                     if record.project.owner == current_user:
                         record_user = record.project.owner
@@ -235,22 +235,22 @@ def pull_record(hash_session, record_id):
                                 )
                             else:
                                 print "Failed because of environment bundle location not found."
-                                return fk.redirect('http://localhost:5000/error-204/')
+                                return fk.redirect('http://0.0.0.0:5000/error-204/')
                         else:
                             print "No environment bundle."
-                            return fk.redirect('http://localhost:5000/error-204/')
+                            return fk.redirect('http://0.0.0.0:5000/error-204/')
                     else:
-                        return fk.redirect('http://localhost:5000/error-401/?action=pull_failed')
+                        return fk.redirect('http://0.0.0.0:5000/error-401/?action=pull_failed')
                 
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=pull_denied')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=pull_denied')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/public/record/comments/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def public_record_comments(record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/record/comments/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/record/comments/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -261,16 +261,16 @@ def public_record_comments(record_id):
         except:
             print str(traceback.print_exc())
         if record is None or (record != None and record.access != 'public'):
-            return fk.redirect('http://localhost:5000/?action=comments_failed')
+            return fk.redirect('http://0.0.0.0:5000/?action=comments_failed')
         else:
             return fk.Response(json.dumps(record.comments, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
     else:
-        return fk.redirect('http://localhost:5000/error-405/') 
+        return fk.redirect('http://0.0.0.0:5000/error-405/') 
 
 @app.route(CLOUD_URL + '/public/record/view/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def public_record_view(record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/record/view/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/record/view/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -281,19 +281,19 @@ def public_record_view(record_id):
         except:
             print str(traceback.print_exc())
         if record is None:
-            return fk.redirect('http://localhost:5000/error-204/')
+            return fk.redirect('http://0.0.0.0:5000/error-204/')
         else:
             if record.access == 'public':
                 return fk.Response(record.to_json(), mimetype='application/json')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=view_failed')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=view_failed')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')   
+        return fk.redirect('http://0.0.0.0:5000/error-405/')   
 
 @app.route(CLOUD_URL + '/public/record/pull/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def public_pull_record(record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/record/pull/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/record/pull/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -304,7 +304,7 @@ def public_pull_record(record_id):
         except:
             print str(traceback.print_exc())
         if record is None:
-            return fk.redirect('http://localhost:5000/error-204/')
+            return fk.redirect('http://0.0.0.0:5000/error-204/')
         else:
             if record.project.access == 'public':
                 if record.environment:
@@ -321,27 +321,27 @@ def public_pull_record(record_id):
                         )
                     else:
                         print "Failed because of environment bundle location not found."
-                        return fk.redirect('http://localhost:5000/error-204/')
+                        return fk.redirect('http://0.0.0.0:5000/error-204/')
                 else:
                     print "No environment bundle."
-                    return fk.redirect('http://localhost:5000/error-204/')
+                    return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=pull_denied')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=pull_denied')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')  
+        return fk.redirect('http://0.0.0.0:5000/error-405/')  
 
 #To be fixed.
 #Implement the quotas here image_obj.tell()
 @app.route(CLOUD_URL + '/<hash_session>/record/file/upload/<record_id>', methods=['POST'])
 @crossdomain(origin='*')
 def file_add(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/file/upload/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/file/upload/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
     user_model = UserModel.objects(session=hash_session).first()
     if user_model is None:
-        return fk.redirect('http://localhost:5000/?action=update_denied')
+        return fk.redirect('http://0.0.0.0:5000/?action=update_denied')
     else:    
         if fk.request.method == 'POST':
             infos = {}
@@ -350,7 +350,7 @@ def file_add(hash_session, record_id):
             except:
                 print str(traceback.print_exc())
             if record is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if fk.request.data:
                     file_model = FileModel.objects.get_or_create(created_at=datetime.datetime.utcnow())
@@ -378,7 +378,7 @@ def file_add(hash_session, record_id):
                                         file_model.relative_path = relative_path
                                         file_model.location = location
                                         today = datetime.date.today()
-                                        (stat, created) = StatModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), interval="%s_%s_%s_0_0_0-%s_%s_%s_23_59_59"%(today.year, today.month, today.day, today.year, today.month, today.day), category="storage", periode="daily")
+                                        (stat, created) = StatModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), interval="%s_%s_%s_0_0_0-%s_%s_%s_23_59_59"%(today.year, today.month, today.day, today.year, today.month, today.day), category="storage", periode="daily")
                                         if not created:
                                             stat.traffic += file_obj.tell()
                                             stat.save()
@@ -399,7 +399,7 @@ def file_add(hash_session, record_id):
 @app.route(CLOUD_URL + '/<hash_session>/record/file/download/<file_id>', methods=['POST'])
 @crossdomain(origin='*')
 def file_download(hash_session, file_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/file/download/<file_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/file/download/<file_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -407,14 +407,14 @@ def file_download(hash_session, file_id):
     if fk.request.method == 'GET':
         user_model = UserModel.object.with_id(user_id)
         if user_model == None:
-            return fk.redirect('http://localhost:5000/error-204/')
+            return fk.redirect('http://0.0.0.0:5000/error-204/')
         else:
             try:
                 record_file = FileModel.objects.with_id(file_id)
             except:
                 print str(traceback.print_exc())
             if record_file is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if record_file.record.project.owner == current_user:
                     _file = load_file(record_file)
@@ -426,14 +426,14 @@ def file_download(hash_session, file_id):
                         attachment_filename=profile_model.record_file['location'].split("_")[1],
                     )
                 else:
-                    return fk.redirect('http://localhost:5000/error-401/?action=remove_failed')
+                    return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_failed')
     else:
         return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @app.route(CLOUD_URL + '/<hash_session>/record/file/remove/<file_id>', methods=['DELETE'])
 @crossdomain(origin='*')
 def file_remove(hash_session, file_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/record/file/remove/<file_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/record/file/remove/<file_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -446,14 +446,14 @@ def file_remove(hash_session, file_id):
             except:
                 print str(traceback.print_exc())
             if record_file is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if record_file.record.project.owner == current_user:
                     delete_record_file(record_file)
                     record_file.delete()
                     return fk.Response('Record file removed', status.HTTP_200_OK)
                 else:
-                    return fk.redirect('http://localhost:5000/error-401/?action=remove_failed')
+                    return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_failed')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=remove_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=remove_denied')
 

@@ -20,7 +20,7 @@ import traceback
 @app.route(CLOUD_URL + '/<hash_session>/dashboard/search', methods=['GET'])
 @crossdomain(origin='*')
 def private_search(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/dashboard/search")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/dashboard/search")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -29,7 +29,7 @@ def private_search(hash_session):
         current_user = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if current_user is None:
-            return fk.redirect('http://localhost:5000/error-401/?action=dashboard_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_denied')
         else:
             allowance = current_user.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
             print "Allowance: "+allowance
@@ -111,16 +111,16 @@ def private_search(hash_session):
                                 diffs.append({"id":str(diff.id), "from":str(diff.record_from.id), "to":str(diff.record_to.id), "sender":str(diff.sender.id), "targeted":str(diff.targeted.id), "proposition":diff.proposition, "status":diff.status})
                         
                     return fk.Response(json.dumps({'users':{'count':len(users), 'result':users}, 'projects':{'count':len(projects), 'result':projects}, 'records':{'count':len(records), 'result':records}, 'diffs':{'count':len(diffs), 'result':diffs}}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
-                    # return fk.redirect('http://localhost:5000/error-400/')
+                    # return fk.redirect('http://0.0.0.0:5000/error-400/')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/<hash_session>/dashboard/projects', methods=['GET'])
 @crossdomain(origin='*')
 def project_dashboard(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/dashboard/projects")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/dashboard/projects")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -129,7 +129,7 @@ def project_dashboard(hash_session):
         current_user = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if current_user is None:
-            return fk.redirect('http://localhost:5000/error-401/?action=dashboard_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_denied')
         else:
             allowance = current_user.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
             print "Allowance: "+allowance
@@ -143,14 +143,14 @@ def project_dashboard(hash_session):
                     summaries.append(project)
                 return fk.Response(json.dumps({'number':len(summaries), 'projects':summaries}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/<hash_session>/dashboard/records/<project_id>', methods=['GET'])
 @crossdomain(origin='*')
 def dashboard_records(hash_session, project_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/dashboard/records/<project_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/dashboard/records/<project_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -159,7 +159,7 @@ def dashboard_records(hash_session, project_id):
         current_user = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if current_user is None:
-            return fk.redirect('http://localhost:5000/error-401/?action=dashboard_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_denied')
         else:
             allowance = current_user.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
             print "Allowance: "+allowance
@@ -186,15 +186,15 @@ def dashboard_records(hash_session, project_id):
                 project["activity"] = {"number":len(records), "records":records_object}
                 return fk.Response(json.dumps(project, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')  
+        return fk.redirect('http://0.0.0.0:5000/error-405/')  
 
 
 @app.route(CLOUD_URL + '/<hash_session>/dashboard/record/diff/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def record_diff(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/dashboard/record/diff/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/dashboard/record/diff/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -211,7 +211,7 @@ def record_diff(hash_session, record_id):
                 except:
                     print str(traceback.print_exc())
                 if record is None:
-                    return fk.redirect('http://localhost:5000/error-204/')
+                    return fk.redirect('http://0.0.0.0:5000/error-204/')
                 else:
                     if (record.project.owner == current_user) or record.access == 'public':
                         diffs = []
@@ -227,18 +227,18 @@ def record_diff(hash_session, record_id):
                         record_info['diffs'] = diffs          
                         return fk.Response(json.dumps(record_info, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
                     else:
-                        return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+                        return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=dashboard_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_denied')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/<hash_session>/dashboard/reproducibility/assess/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def reproducibility_assess(hash_session, record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/dashboard/reproducibility/assess/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/dashboard/reproducibility/assess/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -252,7 +252,7 @@ def reproducibility_assess(hash_session, record_id):
             except:
                 print str(traceback.print_exc())
             if record is None:
-                return fk.redirect('http://localhost:5000/error-204/')
+                return fk.redirect('http://0.0.0.0:5000/error-204/')
             else:
                 if request.args:
                     if record.project.owner == current_user or record.access == 'public':
@@ -293,13 +293,13 @@ def reproducibility_assess(hash_session, record_id):
 
                         return fk.Response(json.dumps(results, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
                     else:
-                        return fk.redirect('http://localhost:5000/error-401/?action=repeats_failed')
+                        return fk.redirect('http://0.0.0.0:5000/error-401/?action=repeats_failed')
                 else:
-                    return fk.redirect('http://localhost:5000/error-415/')
+                    return fk.redirect('http://0.0.0.0:5000/error-415/')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=view_denied')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=view_denied')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')      
+        return fk.redirect('http://0.0.0.0:5000/error-405/')      
 
 
 ### Public access
@@ -307,7 +307,7 @@ def reproducibility_assess(hash_session, record_id):
 @app.route(CLOUD_URL + '/public/dashboard/search', methods=['GET'])
 @crossdomain(origin='*')
 def public_search():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/dashboard/search")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/dashboard/search")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -391,15 +391,15 @@ def public_search():
                 
             return fk.Response(json.dumps({'users':{'count':len(users), 'result':users}, 'projects':{'count':len(projects), 'result':projects}, 'records':{'count':len(records), 'result':records}, 'diffs':{'count':len(diffs), 'result':diffs}}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
         else:
-            return fk.redirect('http://localhost:5000/error-400/')
+            return fk.redirect('http://0.0.0.0:5000/error-400/')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 
 @app.route(CLOUD_URL + '/public/dashboard/projects', methods=['GET'])
 @crossdomain(origin='*')
 def public_project_dashboard():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/dashboard/projects")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/dashboard/projects")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -418,12 +418,12 @@ def public_project_dashboard():
                 summaries.append(project)
         return fk.Response(json.dumps({'number':len(summaries), 'projects':summaries}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/public/dashboard/records/<project_id>', methods=['GET'])
 @crossdomain(origin='*')
 def public_dashboard_records(project_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/dashboard/records/<project_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/dashboard/records/<project_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -453,15 +453,15 @@ def public_dashboard_records(project_id):
             project["activity"] = {"number":len(records), "records":records_object}
             return fk.Response(json.dumps(project, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
         else:
-            return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+            return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')  
+        return fk.redirect('http://0.0.0.0:5000/error-405/')  
 
 
 @app.route(CLOUD_URL + '/public/dashboard/record/diff/<record_id>', methods=['GET'])
 @crossdomain(origin='*')
 def public_record_diff(record_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/dashboard/record/diff/<record_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/dashboard/record/diff/<record_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -472,7 +472,7 @@ def public_record_diff(record_id):
         except:
             print str(traceback.print_exc())
         if record is None:
-            return fk.redirect('http://localhost:5000/error-204/')
+            return fk.redirect('http://0.0.0.0:5000/error-204/')
         else:
             if record.access == 'public':
                 diffs = []
@@ -488,9 +488,9 @@ def public_record_diff(record_id):
                 record_info['diffs'] = diffs          
                 return fk.Response(json.dumps(record_info, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
             else:
-                return fk.redirect('http://localhost:5000/error-401/?action=dashboard_failed')
+                return fk.redirect('http://0.0.0.0:5000/error-401/?action=dashboard_failed')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/public/dashboard/traffic/api', methods=['GET'])
 @crossdomain(origin='*')
@@ -499,7 +499,7 @@ def traffic_api():
         api_traffics = TrafficModel.objects(service="api")
         return fk.Response(json.dumps([json.loads(traffic.to_json()) for traffic in api_traffics], sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')
 
 @app.route(CLOUD_URL + '/public/dashboard/traffic/cloud', methods=['GET'])
 @crossdomain(origin='*')
@@ -508,4 +508,4 @@ def traffic_cloud():
         api_traffics = TrafficModel.objects(service="cloud")
         return fk.Response(json.dumps([json.loads(traffic.to_json()) for traffic in api_traffics], sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
     else:
-        return fk.redirect('http://localhost:5000/error-405/')
+        return fk.redirect('http://0.0.0.0:5000/error-405/')

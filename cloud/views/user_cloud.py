@@ -31,7 +31,7 @@ import hashlib
 @app.route(CLOUD_URL + '/public/user/register', methods=['POST'])
 @crossdomain(origin='*')
 def user_register():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/register")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/register")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -67,7 +67,7 @@ def user_register():
                     while True:
                         try:
                             # Many trials because of API key generation failures some times.
-                            (user_model, created) = UserModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), email=email, api_token=hashlib.sha256(b'DDSMSession_%s_%s'%(email, str(datetime.datetime.utcnow()))).hexdigest())
+                            (user_model, created) = UserModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), email=email, api_token=hashlib.sha256(b'DDSMSession_%s_%s'%(email, str(datetime.datetime.utcnow()))).hexdigest())
                             if email == "root@":
                                 user_model.group = "admin"
                                 user_model.save()
@@ -85,7 +85,7 @@ def user_register():
                                 except:
                                     pass
                             if created:
-                                (profile_model, created) = ProfileModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), user=user_model, fname=fname, lname=lname, organisation=organisation, about=about)
+                                (profile_model, created) = ProfileModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), user=user_model, fname=fname, lname=lname, organisation=organisation, about=about)
                             break
                         except:
                             print str(traceback.print_exc())
@@ -103,13 +103,13 @@ def user_register():
                     print "Session: %s"%user_model.session
 
                     today = datetime.date.today()
-                    (stat, created) = StatModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), interval="%s_1-%s_12"%(today.year, today.year), category="user", periode="yearly")
+                    (stat, created) = StatModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), interval="%s_1-%s_12"%(today.year, today.year), category="user", periode="yearly")
                     if not created:
                         stat.traffic += 1 
                         stat.save()
 
                     return fk.Response(json.dumps({'session':user_model.session}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
-                    # return fk.redirect('http://localhost:5000/%s'%user_model.session)
+                    # return fk.redirect('http://0.0.0.0:5000/%s'%user_model.session)
                 except:
                     print str(traceback.print_exc())
                     return fk.make_response('This user already exists.', status.HTTP_401_UNAUTHORIZED)
@@ -121,7 +121,7 @@ def user_register():
 @app.route(CLOUD_URL + '/public/user/password/reset', methods=['POST'])
 @crossdomain(origin='*')
 def user_password_reset():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/password/reset")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/password/reset")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -146,7 +146,7 @@ def user_password_reset():
 @app.route(CLOUD_URL + '/public/user/password/renew', methods=['POST'])
 @crossdomain(origin='*')
 def user_password_renew():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/password/renew")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/password/renew")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -162,7 +162,7 @@ def user_password_renew():
             if account != None:
                 account.password = password
                 account.save()
-                return fk.redirect('http://localhost:5000')
+                return fk.redirect('http://0.0.0.0:5000')
             else:
                 return fk.make_response('Password renew failed.', status.HTTP_401_UNAUTHORIZED)
                     
@@ -174,7 +174,7 @@ def user_password_renew():
 @app.route(CLOUD_URL + '/<hash_session>/user/password/change', methods=['POST'])
 @crossdomain(origin='*')
 def user_password_change():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/password/change")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/password/change")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -183,7 +183,7 @@ def user_password_change():
         user_model = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if user_model is None:
-            return fk.redirect('http://localhost:5000/?action=change_denied')
+            return fk.redirect('http://0.0.0.0:5000/?action=change_denied')
         else:
             # print "Connected_at: %s"%str(user_model.connected_at)
             allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
@@ -209,14 +209,14 @@ def user_password_change():
                 else:
                     return fk.make_response('Password change failed.', status.HTTP_401_UNAUTHORIZED)
             else:
-                return fk.redirect('http://localhost:5000/?action=change_failed')
+                return fk.redirect('http://0.0.0.0:5000/?action=change_failed')
     else:
         return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @app.route(CLOUD_URL + '/public/user/login', methods=['POST'])
 @crossdomain(origin='*')
 def user_login():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/login")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/login")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -239,18 +239,20 @@ def user_login():
                     account = UserModel.objects(email=email).first()
                     if account == None and _user != None:
                         # Sync with stormpath here... :-)
-                        account, created = UserModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), email=email, api_token=hashlib.sha256(b'DDSMSession_%s_%s'%(email, str(datetime.datetime.utcnow()))).hexdigest())
+                        account, created = UserModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), email=email, api_token=hashlib.sha256(b'DDSMSession_%s_%s'%(email, str(datetime.datetime.utcnow()))).hexdigest())
                         if created:
-                            (profile_model, created) = ProfileModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), user=account, fname="None", lname="None", organisation="None", about="None")
+                            (profile_model, created) = ProfileModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), user=account, fname="None", lname="None", organisation="None", about="None")
                     print "Token %s"%account.api_token
                     print fk.request.headers.get('User-Agent')
                     print fk.request.remote_addr
+                    # print "Connected at %s"%str(account.connected_at)
                     # account.connected_at = datetime.datetime.utcnow()
                     # account.save()
                     account.renew("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
-                    print "Session: %s"%account.session
+                    # print "Session: %s"%account.session
                     return fk.Response(json.dumps({'session':account.session}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
-                    # return fk.redirect('http://localhost:5000/?session=%s'%account.session)
+                    # return fk.redirect('http://0.0.0.0:5000/?session=%s'%account.session)
+                    # return fk.redirect('http://0.0.0.0:5200%s/%s/user/sync'%(CLOUD_URL, account.session))
                 except:
                     print str(traceback.print_exc())
                     return fk.make_response('Login failed.', status.HTTP_401_UNAUTHORIZED)
@@ -260,10 +262,10 @@ def user_login():
     else:
         return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@app.route(CLOUD_URL + '/<hash_session>/user/logout', methods=['GET'])
+@app.route(CLOUD_URL + '/<hash_session>/user/sync', methods=['GET'])
 @crossdomain(origin='*')
-def user_logout(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/logout/<hash_session>")
+def user_sync(hash_session):
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/sync/<hash_session>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -272,7 +274,26 @@ def user_logout(hash_session):
         user_model = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if user_model is None:
-            return fk.redirect('http://localhost:5000/?action=logout_denied')
+            return fk.make_response('Login failed.', status.HTTP_401_UNAUTHORIZED)
+        else:
+            user_model.sess_sync("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
+            return fk.Response(json.dumps({'session':user_model.session}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
+    else:
+        return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@app.route(CLOUD_URL + '/<hash_session>/user/logout', methods=['GET'])
+@crossdomain(origin='*')
+def user_logout(hash_session):
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/logout/<hash_session>")
+    if not created:
+        traffic.interactions += 1 
+        traffic.save()
+        
+    if fk.request.method == 'GET':
+        user_model = UserModel.objects(session=hash_session).first()
+        print fk.request.path
+        if user_model is None:
+            return fk.redirect('http://0.0.0.0:5000/?action=logout_denied')
         else:
             # print "Connected_at: %s"%str(user_model.connected_at)
             allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
@@ -282,10 +303,10 @@ def user_logout(hash_session):
                 # user_model.connected_at = datetime.datetime.utcnow()
                 # user_model.save()
                 user_model.renew("%sLogout"%(fk.request.headers.get('User-Agent')))
-                # return fk.redirect('http://localhost:5000/?action=logout_success')
+                # return fk.redirect('http://0.0.0.0:5000/?action=logout_success')
                 return fk.Response('Logout succeed', status.HTTP_200_OK)
             else:
-                return fk.redirect('http://localhost:5000/?action=logout_failed')
+                return fk.redirect('http://0.0.0.0:5000/?action=logout_failed')
     else:
         return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -293,7 +314,7 @@ def user_logout(hash_session):
 @app.route(CLOUD_URL + '/<hash_session>/user/unregister/', methods=['GET'])
 @crossdomain(origin='*')
 def user_unregister(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/unregister/<hash_session>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/unregister/<hash_session>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -301,7 +322,7 @@ def user_unregister(hash_session):
     if fk.request.method == 'GET':
         user_model = UserModel.objects(session=hash_session).first()
         if user_model is None:
-            return fk.redirect('http://localhost:5000/?action=unregister_denied')
+            return fk.redirect('http://0.0.0.0:5000/?action=unregister_denied')
         else:
             # print "Connected_at: %s"%str(user_model.connected_at)
             allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
@@ -310,7 +331,7 @@ def user_unregister(hash_session):
             if allowance == hash_session:
                 return fk.make_response('Currently not implemented. Try later.', status.HTTP_501_NOT_IMPLEMENTED)
             else:
-                return fk.redirect('http://localhost:5000/?action=unregister_failed')
+                return fk.redirect('http://0.0.0.0:5000/?action=unregister_failed')
     else:
         return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -318,7 +339,7 @@ def user_unregister(hash_session):
 @app.route(CLOUD_URL + '/<hash_session>/user/dashboard', methods=['GET'])
 @crossdomain(origin='*')
 def user_dashboard(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/dashboard/<hash_session>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/dashboard/<hash_session>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -327,7 +348,7 @@ def user_dashboard(hash_session):
         user_model = UserModel.objects(session=hash_session).first()
         print fk.request.path
         if user_model is None:
-            return fk.redirect('http://localhost:5000/?action=logout_denied')
+            return fk.redirect('http://0.0.0.0:5000/?action=logout_denied')
         else:
             profile_model = ProfileModel.objects(user=user_model).first()
             # print "Connected_at: %s"%str(user_model.connected_at)
@@ -400,7 +421,7 @@ def user_dashboard(hash_session):
 
                 return fk.Response(json.dumps(dashboard, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
             else:
-                return fk.redirect('http://localhost:5000/?action=dashboard_failed')
+                return fk.redirect('http://0.0.0.0:5000/?action=dashboard_failed')
     else:
         return fk.make_response('Method not allowed.', status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -408,13 +429,13 @@ def user_dashboard(hash_session):
 @app.route(CLOUD_URL + '/<hash_session>/user/update', methods=['POST'])
 @crossdomain(origin='*')
 def user_update(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/update/<hash_session>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/update/<hash_session>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
     user_model = UserModel.objects(session=hash_session).first()
     if user_model is None:
-        return fk.redirect('http://localhost:5000/?action=update_denied')
+        return fk.redirect('http://0.0.0.0:5000/?action=update_denied')
     else:    
         if fk.request.method == 'POST':
             if fk.request.data:
@@ -423,7 +444,7 @@ def user_update(hash_session):
                 # user_model = UserModel.objects(session=hash_session).first()
                 print fk.request.path
                 # if user_model is None:
-                #     return fk.redirect('http://localhost:5000/?action=update_denied')
+                #     return fk.redirect('http://0.0.0.0:5000/?action=update_denied')
                 # else:
                 # print "Connected_at: %s"%str(user_model.connected_at)
                 allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
@@ -432,7 +453,7 @@ def user_update(hash_session):
                 if allowance == hash_session:
                     #Update stormpath user if password is affected
                     #Update local profile data and picture if other data are affected.
-                    # return fk.redirect('http://localhost:5000/?action=update_success')
+                    # return fk.redirect('http://0.0.0.0:5000/?action=update_success')
                     profile_model = ProfileModel.object(user=user_model).first_or_404()
                     fname = data.get("fname", profile_model.fname)
                     lname = data.get("fname", profile_model.lname)
@@ -466,7 +487,7 @@ def user_update(hash_session):
                     return fk.Response('Account update succeed', status.HTTP_200_OK)
                 else:
                     return fk.make_response('Account update failed.', status.HTTP_401_UNAUTHORIZED)
-                    # return fk.redirect('http://localhost:5000/?action=update_failed')
+                    # return fk.redirect('http://0.0.0.0:5000/?action=update_failed')
             if fk.request.files:
                 if fk.request.files['picture']:
                     picture_obj = fk.request.files['picture']
@@ -489,7 +510,7 @@ def user_update(hash_session):
 @app.route(CLOUD_URL + '/public/user/contactus', methods=['POST'])
 @crossdomain(origin='*')
 def user_contactus(): #Setup and start smtp server on the instance
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/contactus")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/contactus")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -520,7 +541,7 @@ def user_contactus(): #Setup and start smtp server on the instance
 @app.route(CLOUD_URL + '/<hash_session>/user/picture', methods=['GET'])
 @crossdomain(origin='*')
 def user_picture(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/picture")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/picture")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -562,7 +583,7 @@ def user_picture(hash_session):
 @app.route(CLOUD_URL + '/<hash_session>/user/trusted', methods=['GET'])
 @crossdomain(origin='*')
 def user_truested(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/trusted")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/trusted")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -573,10 +594,7 @@ def user_truested(hash_session):
         if user_model is None:
             return fk.make_response('Trusting failed.', status.HTTP_401_UNAUTHORIZED)
         else:
-            # print "Connected_at: %s"%str(user_model.connected_at)
             allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
-            print "Allowance: "+allowance
-            # print "Connected_at: %s"%str(user_model.connected_at)
             if allowance == hash_session:
                 return fk.Response('Trusting succeed', status.HTTP_200_OK)
             else:
@@ -587,7 +605,7 @@ def user_truested(hash_session):
 @app.route(CLOUD_URL + '/public/user/home', methods=['GET'])
 @crossdomain(origin='*')
 def user_home():
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/home")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/home")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -627,7 +645,7 @@ def user_home():
 @app.route(CLOUD_URL + '/<hash_session>/user/profile', methods=['GET'])
 @crossdomain(origin='*')
 def user_profile(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/profile")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/profile")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -644,8 +662,6 @@ def user_profile(hash_session):
         else:
             # print "Connected_at: %s"%str(user_model.connected_at)
             allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
-            print "Allowance: "+allowance
-            # print "Connected_at: %s"%str(user_model.connected_at)
             if allowance == hash_session:
                 return fk.Response(json.dumps({'fname':profile_model.fname, 'lname':profile_model.lname, 'organisation':profile_model.organisation, 'about':profile_model.about, 'picture':profile_model.picture, 'email':user_model.email, 'session':user_model.session, 'api':user_model.api_token}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
             else:
@@ -657,7 +673,7 @@ def user_profile(hash_session):
 @app.route(CLOUD_URL + '/<hash_session>/user/renew', methods=['GET'])
 @crossdomain(origin='*')
 def user_renew(hash_session):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/private/user/renew")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/private/user/renew")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -669,7 +685,6 @@ def user_renew(hash_session):
             return fk.make_response('Renew token failed.', status.HTTP_401_UNAUTHORIZED)
         else:
             allowance = user_model.allowed("%s%s"%(fk.request.headers.get('User-Agent'),fk.request.remote_addr))
-            print "Allowance: "+allowance
             if allowance == hash_session:
                 user_model.retoken()
                 return fk.Response(json.dumps({'api':user_model.api_token}, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
@@ -681,7 +696,7 @@ def user_renew(hash_session):
 @app.route(CLOUD_URL + '/public/user/picture/<user_id>', methods=['GET'])
 @crossdomain(origin='*')
 def public_user_picture(user_id):
-    (traffic, created) = TrafficModel.objects.get_or_create(created_at=datetime.datetime.utcnow(), service="cloud", endpoint="/public/user/picture/<user_id>")
+    (traffic, created) = TrafficModel.objects.get_or_create(created_at=str(datetime.datetime.utcnow()), service="cloud", endpoint="/public/user/picture/<user_id>")
     if not created:
         traffic.interactions += 1 
         traffic.save()
@@ -689,7 +704,7 @@ def public_user_picture(user_id):
     if fk.request.method == 'GET':
         user_model = UserModel.object.with_id(user_id)
         if user_model == None:
-            return fk.redirect('http://localhost:5000/error-204/')
+            return fk.redirect('http://0.0.0.0:5000/error-204/')
         else:
             profile_model = ProfileModel.object(user=user_model).first_or_404()
             if profile_model.picture['scope'] == 'remote':
